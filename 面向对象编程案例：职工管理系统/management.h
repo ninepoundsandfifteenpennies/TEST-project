@@ -13,5 +13,7 @@ public:
 	void save();//保存到文件
     int emp_num;//记录职工人数
 	worker** emp_array;
-
+	bool is_empty;//判断文件是否存在/是否为空
+	int get_num();
+	void emp_init();
 };

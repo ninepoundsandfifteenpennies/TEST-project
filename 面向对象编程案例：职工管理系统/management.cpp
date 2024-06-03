@@ -22,10 +22,83 @@ void management::display_menu()
 	cout << "------------------------------------------------------------------" << endl;
 }
 
-management::management()
+
+int management::get_num()
 {
-	this->emp_array = NULL;
-	this->emp_num = 0;
+	ifstream ifs;
+	ifs.open(FILENAME, ios::in);
+	int id;
+	int did;
+	string name;
+
+	int num = 0;//记录人数
+	while (ifs >> id && ifs >> name && ifs >> did)
+	{
+		num++;
+	}
+	return num;
+}
+
+void management::emp_init()
+{
+	ifstream ifs;
+	ifs.open(FILENAME, ios::in);
+	int id;
+	string name;
+	int did;
+	int index = 0;
+	while (ifs >> id && ifs >> name && ifs >> did)
+	{
+		worker* w = NULL;
+		if (did == 1)
+		{
+			w = new employee(id, name, did);
+		}
+		else if (did == 2)
+		{
+			w = new manager(id, name, did);
+		}
+		else
+		{
+			w = new boss(id, name, did);
+		}
+		this->emp_array[index] = w;
+		index ++;
+	}
+	ifs.close();
+}
+
+management::management()
+{   //文件不存在
+	ifstream ifs;
+	ifs.open(FILENAME, ios::in);
+	if (!ifs.is_open())
+	{
+		cout << "文件不存在" << endl;
+		this->emp_array = NULL;
+		this->emp_num = 0;
+		is_empty = true;
+		ifs.close();
+		return;
+	}
+	//文件存在且数据为空
+	char ch;
+	ifs >>ch;//右移读一个字符
+	if (ifs.eof())
+	{
+		cout << "文件为空" << endl;
+		this->emp_array = NULL;
+		this->emp_num = 0;
+		is_empty = true;
+		ifs.close();
+		return;
+	}
+	//文件存在且有数据
+	int num = this->get_num();
+	cout << "文件中有" << num << "人" << endl;
+	this->emp_num = num;
+	this->emp_array = new worker * [this->emp_num];//根据已有文件初始化空间
+	this->emp_init();//将文件数据储存到数组中
 }
 
 
@@ -35,8 +108,8 @@ void management::save()
 	ofs.open(FILENAME,ios::out);
 	for (int i = 0; i <this-> emp_num; i++)
 	{
-		ofs << this->emp_array[i]->m_name << " " <<
-			this->emp_array[i]->m_id << " " <<
+		ofs << this->emp_array[i]->m_id << " " <<
+			this->emp_array[i]->m_name << " " <<			
 			this->emp_array[i]->m_department_id << endl;
 	}
 	ofs.close();
