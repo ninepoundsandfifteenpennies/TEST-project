@@ -68,6 +68,235 @@ void management::emp_init()
 	ifs.close();
 }
 
+
+int management::search_by_id(int id)
+{
+	int index = -1;//如果不存在，返回-1,否则返回对应emp_array数组下标
+	for (int i = 0; i < emp_num; i++)
+	{
+		if (id == this->emp_array[i]->m_id)
+		{
+			index = i;
+			break;
+		}
+	}
+	return index;
+}
+
+int management::search_by_name(string name)
+{
+	int index = -1;//如果不存在，返回-1,否则返回对应emp_array数组下标
+	for (int i = 0; i < emp_num; i++)
+	{
+		if (name == this->emp_array[i]->m_name)
+		{
+			index = i;
+			break;
+		}
+	}
+	return index;
+}
+
+void management::delete_emp()
+{
+	if (this->is_empty)
+	{
+		cout << "文件不存在或为空" << endl;
+		system("pause");
+		system("cls");
+    }
+	else {
+		int status = 0;
+		int index;
+		cout << "通过姓名索引输入1，通过id索引输入2: "; out:
+		cin >> status;
+		if (status == 1)
+		{
+			string name;
+			cout << "输入需要删除职员的姓名: ";
+			cin >> name;
+			index = this->search_by_name(name);
+		}
+		else if (status == 2)
+		{
+			int id;
+			cout << "输入需要删除职员的id: ";
+			cin >> id;
+			index = this->search_by_id(id);
+		}
+		else
+		{
+			cout << "输入错误，重新输入!" << endl;
+			goto out;
+		}
+		if (index == -1)
+		{
+			cout << "该职员不存在!" << endl;
+			system("pause");
+			system("cls");
+			return;
+		}
+		else
+		{
+			delete this->emp_array[index];
+			this->emp_array[index] = NULL;
+			for (int i = index; i < this->emp_num - 1; i++)
+			{
+				this->emp_array[i] = this->emp_array[i + 1];
+			}
+			this->emp_num--;
+			this->save();//把修改保存到文件
+			cout << "成功删除一个职员" << endl;
+			system("pause");
+			system("cls");
+		}
+	}
+}
+
+void management::modifi_emp()
+{
+	if (this->is_empty)
+	{
+		cout << "文件不存在或者为空" << endl;
+		system("pause");
+		system("cls");
+	}
+	else
+	{
+		int status = 0;
+		int index;
+		cout << "通过姓名索引输入1，通过id索引输入2: "; out:
+		cin >> status;
+		if (status == 1)
+		{
+			string name;
+			cout << "输入需要修改职员的姓名: ";
+			cin >> name;
+			index = this->search_by_name(name);
+		}
+		else if (status == 2)
+		{
+			int id;
+			cout << "输入需要修改职员的id: ";
+			cin >> id;
+			index = this->search_by_id(id);
+		}
+		else
+		{
+			cout << "输入错误，重新输入!" << endl;
+			goto out;
+		}
+		if (index == -1)
+		{
+			cout << "该职员不存在!" << endl;
+			system("pause");
+			system("cls");
+			return;
+		}
+		else
+		{
+			int n_id;
+			string n_name;
+			int n_did;
+			cout << "输入修改后的id" << endl;
+			cin >> n_id;
+			cout << "输入修改后的名字" << endl;
+			cin >> n_name; 
+			cout << "输入修改后的部门编号" << endl;
+			cout << "1.普通职员" << endl;
+			cout << "2.经理" << endl;
+			cout << "3.老板" << endl;out2:
+			cin >> n_did;
+			worker* w = NULL;
+			switch (n_did)
+			{
+			case 1:
+				w = new employee(n_id, n_name, n_did);
+				break;
+			case 2:
+				w = new manager(n_id, n_name, n_did);
+				break;
+			case 3:
+				w = new boss(n_id, n_name, n_did);
+				break;
+			default:
+				cout << "输入错误，重新输入!" << endl;
+				goto out2;
+			}
+			delete this->emp_array[index];
+			this->emp_array[index] = w;
+			this->save();
+			cout << "成功修改该职员信息" << endl;
+			system("pause");
+			system("cls");
+		}
+	}
+
+}
+
+void management::find_emp()
+{
+	if (this->is_empty)
+	{
+		cout << "文件不存在或者为空" << endl;
+		system("pause");
+		system("cls");
+	}
+	else
+	{
+		int status = 0;
+		int index;
+		cout << "通过姓名索引输入1，通过id索引输入2: "; out:
+		cin >> status;
+		if (status == 1)
+		{
+			string name;
+			cout << "需要查找职工的姓名" << endl;
+			cin >> name;
+			index = this->search_by_name(name);
+		}
+		else if (status == 2)
+		{
+			int id;
+			cout << "需要查找职工的id ";
+			cin >> id;
+			index = this->search_by_id(id);
+		}
+		else
+		{
+			cout << "输入错误，重新输入" << endl;
+				goto out;
+		}
+		if (index == -1)
+		{
+			cout << "查无此人" << endl;
+		}
+		else
+		{
+			cout << "查询成功，该人的信息如下:" << endl;
+			this->emp_array[index]->show_info();
+			system("pause");
+			system("cls");
+		}
+	}
+}
+void management::show_info()
+{
+	if (this->is_empty)
+	{
+		cout << "文件为空或文件不存在" << endl;
+		system("pause");
+		system("cls");
+		return;
+	}
+	for (int i = 0; i < this->emp_num; i++)
+	{
+		this->emp_array[i]->show_info();
+	}
+	system("pause");
+	system("cls");
+}
+
 management::management()
 {   //文件不存在
 	ifstream ifs;
@@ -84,7 +313,7 @@ management::management()
 	//文件存在且数据为空
 	char ch;
 	ifs >>ch;//右移读一个字符
-	if (ifs.eof())
+	if (ifs.eof())//读到的字符为eof
 	{
 		cout << "文件为空" << endl;
 		this->emp_array = NULL;
@@ -151,7 +380,7 @@ void management::addperson()
 			cout << "输入第" << i + 1 << "个职工的岗位编号" << endl;
 			cout << "1.普通职员" << endl;
 			cout << "2.经理" << endl;
-			cout << "3.老板" << endl; out2:
+			cout << "3.老板" << endl;out2: 
 			cin >> did;
 			worker* w = NULL;//创建父类对象指针以指向子类对象实现多态
 			switch (did)
@@ -178,6 +407,7 @@ void management::addperson()
 		this->emp_array = new_size;
 		cout << "成功添加" << add_num << "名职工" << endl;
 		this->save();
+		this->is_empty = false;
 	}
 
 	else
@@ -190,6 +420,88 @@ void management::addperson()
 
 }
 
+void management::sort_emp()
+{
+	if (this->is_empty)
+	{
+		cout << "文件为空或文件不存在" << endl;
+		system("pause");
+		system("cls");
+	}
+	else
+	{
+		cout << "升序排序选1，降序选2" << endl;
+		int choice;
+		cin >> choice;
+		for (int i = 0; i < this->emp_num; i++)
+		{
+			int maxormin = i;
+			for (int j = i + 1; j < this->emp_num; j++)
+			{
+				if (choice == 1)
+				{
+					if (this->emp_array[i]->m_id > this->emp_array[j]->m_id)
+						maxormin = j;
+				}
+				else if (choice == 2)
+				{
+					if (this->emp_array[i]->m_id < this->emp_array[j]->m_id)
+						maxormin = j;
+				}
+				
+			}
+			if (maxormin!=i)
+			{
+				worker* temp;
+				temp = this->emp_array[i];
+				this->emp_array[i] = this->emp_array[maxormin];
+				this->emp_array[maxormin] =temp;
+			}
+		}
+		this->save();
+		cout << "排序成功" << endl;
+		//this->show_info();
+		system("pause");
+		system("cls");
+	}
+}
+
+void management::clearfile()
+{
+	cout << "确认清空？y/n" << endl;
+	string choice;out:
+	cin >> choice;
+	if (choice == "n")
+	{
+		return;
+	}
+	else if (choice == "y")
+	{
+		ofstream ofs(FILENAME, ios::trunc);//如果存在删除并重建文件
+		ofs.close();
+		if (this->emp_array != NULL)
+		{
+			for (int i = 0; i < this->emp_num; i++)
+			{  
+				if(this->emp_array[i]!=NULL)
+				delete this->emp_array[i];
+			}
+
+		}
+		this->emp_num = 0;
+		delete[]this->emp_array;
+		this->emp_array = NULL;
+		this->is_empty = true;
+		cout << "清除成功" << endl;
+		system("pause");
+		system("cls");
+	}
+	else
+	{
+		cout << "输入错误,重新输入" << endl;
+		goto out;
+	}
+}
 management::~management()
 {
 	if (this->emp_array != NULL)

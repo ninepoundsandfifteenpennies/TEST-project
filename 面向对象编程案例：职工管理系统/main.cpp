@@ -21,21 +21,27 @@ int main()
 			break;
 
 		case 2:
+			m.show_info();
 			break;
 
 		case 3:
+			m.delete_emp();
 			break;
 
 		case 4:
+			m.modifi_emp();
 			break;
 
 		case 5:
+			m.find_emp();
 			break;
 
 		case 6:
+			m.sort_emp();
 			break;
 
 		case 7:
+			m.clearfile();
 			break;
 
 
